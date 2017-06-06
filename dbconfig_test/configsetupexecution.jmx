@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jmeterTestPlan version="1.2" properties="2.8" jmeter="2.13 r1665067">
+<jmeterTestPlan version="1.2" properties="3.1" jmeter="3.1 r1770033">
   <hashTree>
     <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Test Plan - SETUP TEST CONFIGURATION" enabled="true">
       <stringProp name="TestPlan.comments">The purpose of this test plan is to set up test configuration in a file: testconfiguration.xml. This plan is the same for all tests - it creates the configuration file using the testconfig reference regardless of what testplan asked for it.</stringProp>

@@ -30,16 +30,8 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="SoapSampler.URL_DATA">${__XPath(testconfiguration.xml,//configrecord/url/text())}</stringProp>
-          <stringProp name="HTTPSamper.xml_data">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;
-&lt;soap12:Envelope xmlns:xsi=&quot;http://www.w3.org/2001/XMLSchema-instance&quot; xmlns:xsd=&quot;http://www.w3.org/2001/XMLSchema&quot; xmlns:soap12=&quot;http://www.w3.org/2003/05/soap-envelope&quot;&gt;
-  &lt;soap12:Body&gt;
-    &lt;GetWeather xmlns=&quot;http://www.webserviceX.NET&quot;&gt;
-      &lt;CityName&gt;Paris&lt;/CityName&gt;
-      &lt;CountryName&gt;France&lt;/CountryName&gt;
-    &lt;/GetWeather&gt;
-  &lt;/soap12:Body&gt;
-&lt;/soap12:Envelope&gt;</stringProp>
+          <stringProp name="SoapSampler.URL_DATA">${__FileToString(${__XPath(testsetup.xml,//loadplan/payloadfile/text())},,)}</stringProp>
+          <stringProp name="HTTPSamper.xml_data">${__FileToString(${__XPath(testsetup.xml,//loadplan/payloadfile/text())},,)} </stringProp>
           <stringProp name="SoapSampler.xml_data_file"></stringProp>
           <stringProp name="SoapSampler.SOAP_ACTION"></stringProp>
           <stringProp name="SoapSampler.SEND_SOAP_ACTION">false</stringProp>

@@ -1,0 +1,5 @@
+ <gitconfig>
+   <loadplan>
+         <payloadfile>./payload.xml</payloadfile>          
+   </loadplan>
+ </gitconfig>
