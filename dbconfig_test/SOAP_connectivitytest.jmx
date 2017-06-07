@@ -30,8 +30,8 @@
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
-          <stringProp name="SoapSampler.URL_DATA">${__FileToString(${__XPath(testsetup.xml,//loadplan/payloadfile/text())},,)}</stringProp>
-          <stringProp name="HTTPSamper.xml_data"></stringProp>
+          <stringProp name="SoapSampler.URL_DATA">${__XPath(testconfiguration.xml,//url/text())}</stringProp>
+          <stringProp name="HTTPSamper.xml_data">${__FileToString(${__XPath(testsetup.xml,//loadplan/payloadfile/text())},,)}</stringProp>
           <stringProp name="SoapSampler.xml_data_file"></stringProp>
           <stringProp name="SoapSampler.SOAP_ACTION"></stringProp>
           <stringProp name="SoapSampler.SEND_SOAP_ACTION">false</stringProp>
