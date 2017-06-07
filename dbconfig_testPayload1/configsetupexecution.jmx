@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jmeterTestPlan version="1.2" properties="3.1" jmeter="3.1 r1770033">
+  <hashTree>
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Test Plan - SETUP TEST CONFIGURATION" enabled="true">
+      <stringProp name="TestPlan.comments">The purpose of this test plan is to set up test configuration in a file: testconfiguration.xml. This plan is the same for all tests - it creates the configuration file using the testconfig reference regardless of what testplan asked for it.</stringProp>
+      <boolProp name="TestPlan.functional_mode">false</boolProp>
+      <boolProp name="TestPlan.serialize_threadgroups">true</boolProp>
+      <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+        <collectionProp name="Arguments.arguments"/>
+      </elementProp>
+      <stringProp name="TestPlan.user_define_classpath"></stringProp>
+      <boolProp name="TestPlan.tearDown_on_shutdown">true</boolProp>
+    </TestPlan>
+    <hashTree>
+      <SetupThreadGroup guiclass="SetupThreadGroupGui" testclass="SetupThreadGroup" testname="setUp Thread Group - initialize test configuration" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">stoptest</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <longProp name="ThreadGroup.start_time">1453989724000</longProp>
+        <longProp name="ThreadGroup.end_time">1453989724000</longProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+        <stringProp name="TestPlan.comments">Reads a test configuration item from the configuration table using the testconfigreference parameters Jenkins must provide to JMeter.</stringProp>
+      </SetupThreadGroup>
+      <hashTree>
+        <UserParameters guiclass="UserParametersGui" testclass="UserParameters" testname="User Parameters" enabled="true">
+          <collectionProp name="UserParameters.names">
+            <stringProp name="112787">ref</stringProp>
+            <stringProp name="100589">env</stringProp>
+            <stringProp name="116643">ver</stringProp>
+          </collectionProp>
+          <collectionProp name="UserParameters.thread_values">
+            <collectionProp name="1228645279">
+              <stringProp name="-836674308">${__P(ref,)}</stringProp>
+              <stringProp name="-1200064926">${__P(env,)}</stringProp>
+              <stringProp name="-721800212">${__P(ver,)}</stringProp>
+            </collectionProp>
+          </collectionProp>
+          <boolProp name="UserParameters.per_iteration">false</boolProp>
+        </UserParameters>
+        <hashTree/>
+        <BeanShellSampler guiclass="BeanShellSamplerGui" testclass="BeanShellSampler" testname="Just a Parent BeanShell Sampler" enabled="true">
+          <stringProp name="BeanShellSampler.query">log.info(&quot;parent beanshell sampler&quot;);</stringProp>
+          <stringProp name="BeanShellSampler.filename"></stringProp>
+          <stringProp name="BeanShellSampler.parameters"></stringProp>
+          <boolProp name="BeanShellSampler.resetInterpreter">false</boolProp>
+        </BeanShellSampler>
+        <hashTree>
+          <BeanShellAssertion guiclass="BeanShellAssertionGui" testclass="BeanShellAssertion" testname="BeanShell Assertion" enabled="true">
+            <stringProp name="TestPlan.comments">Retrieve the DB config record reference by the JMeter parameters !ref&quot;, &quot;env&quot; and &quot;ver&quot;</stringProp>
+            <stringProp name="BeanShellAssertion.query">import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+
+log.info(&quot;________________starting THE config retrieval...&quot;);
+
+//Oracle
+//Class.forName(&quot;oracle.jdbc.OracleDriver&quot;);
+//Sqlite
+Class.forName(&quot;org.sqlite.JDBC&quot;);
+log.info(&quot;________________DB driver loaded...getting DB connection...&quot;);
+
+//Oracle
+//connect = DriverManager.getConnection(&quot;jdbc:oracle:thin:@localhost:1521:fmwdev&quot;,&quot;product&quot;,&quot;product&quot;);
+//Sqlite
+connect = DriverManager.getConnection(&quot;jdbc:sqlite:C:\\gitrepos\\configdb_sqlite\\configdb.sqlite&quot;);
+log.info(&quot;________________Got DB connection...preparing SQL statement...&quot;);
+
+PreparedStatement preparedStatement = connect.prepareStatement(&quot;select CFG from CONFIG where REF=? AND ENV=? AND VER=?&quot;);
+log.info(&quot;_______________prepared statement OK...Getting the config reference fields...&quot;);
+
+//References to the unique configuration item to get from the config DB.
+ref = vars.get(&quot;ref&quot;);
+env = vars.get(&quot;env&quot;);
+ver = vars.get(&quot;ver&quot;);
+
+//Old version reference
+//testconfigreference = vars.get(&quot;testconfigreference&quot;);
+log.info(&quot;_______________The config reference: &quot; + ref);
+log.info(&quot;_______________The config environment: &quot; + env);
+log.info(&quot;_______________The config version: &quot; + ver);
+
+preparedStatement.setString(1,ref);
+preparedStatement.setString(2,env);
+preparedStatement.setString(3,ver);
+
+rs=preparedStatement.executeQuery();
+
+log.info(&quot;________________starting output...&quot;);
+
+
+String cfg_testconfiguration;
+  log.info(&quot;Will now load the configuration item from the resultset...if it&apos;s there......&quot;);
+while (rs.next()) {
+  log.info(&quot;RESULTSET CONTENT FOUND:Getting the configuration XML...&quot;);
+  cfg_testconfiguration=rs.getString(1);
+}
+  log.info(&quot;Proceeding...&quot;);
+
+connect.close();
+
+
+log.info(&quot;_______________The configuration is: :&quot; + cfg_testconfiguration);
+
+if (cfg_testconfiguration == null) {
+	
+	log.info(&quot;;_________________Failed to find configuration with reference:&quot;+cfg_testconfiguration);
+	cfg_testconfiguration=&quot;ERROR - failed to retrieve the test configuration from the testconfiguration DB.&quot;;
+	// TRIGGER FAILURE FOR THE SAMPLER EXECUTION
+	Failure = true;
+
+}
+else
+{
+
+     log.info(&quot;__________________Generating testconfiguration.xml to contain the configuration for this test retrieved from the config DB&quot;);
+}
+
+  FileWriter fstream = new FileWriter(&quot;testconfiguration.xml&quot;,false); 
+  BufferedWriter out = new BufferedWriter(fstream); 
+  out.write(cfg_testconfiguration);
+  out.close();	
+
+</stringProp>
+            <stringProp name="BeanShellAssertion.filename"></stringProp>
+            <stringProp name="BeanShellAssertion.parameters"></stringProp>
+            <boolProp name="BeanShellAssertion.resetInterpreter">false</boolProp>
+          </BeanShellAssertion>
+          <hashTree/>
+        </hashTree>
+        <ResultCollector guiclass="GraphVisualizer" testclass="ResultCollector" testname="Graph Results" enabled="true">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>true</responseData>
+              <samplerData>true</samplerData>
+              <xml>true</xml>
+              <fieldNames>true</fieldNames>
+              <responseHeaders>true</responseHeaders>
+              <requestHeaders>true</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <url>true</url>
+              <fileName>true</fileName>
+              <hostname>true</hostname>
+              <threadCounts>true</threadCounts>
+              <sampleCount>true</sampleCount>
+              <connectTime>true</connectTime>
+            </value>
+          </objProp>
+          <stringProp name="filename">thelogfile</stringProp>
+        </ResultCollector>
+        <hashTree/>
+        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="false">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>false</xml>
+              <fieldNames>false</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>false</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <threadCounts>true</threadCounts>
+            </value>
+          </objProp>
+          <stringProp name="filename"></stringProp>
+        </ResultCollector>
+        <hashTree/>
+        <BeanShellSampler guiclass="BeanShellSamplerGui" testclass="BeanShellSampler" testname="Another beanshell sampler" enabled="true">
+          <stringProp name="BeanShellSampler.query">log.info(&quot;just another bean shell sampler&quot;);sdfzdf
+</stringProp>
+          <stringProp name="BeanShellSampler.filename"></stringProp>
+          <stringProp name="BeanShellSampler.parameters"></stringProp>
+          <boolProp name="BeanShellSampler.resetInterpreter">false</boolProp>
+        </BeanShellSampler>
+        <hashTree/>
+      </hashTree>
+    </hashTree>
+  </hashTree>
+</jmeterTestPlan>
